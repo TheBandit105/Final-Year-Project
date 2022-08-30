@@ -148,7 +148,7 @@ def emotRegSys():
             print("NOTICE! Happy levels deteced above set threshold of 70%! Great job, please keep it up!\n")
 
         # Frame number incremented.
-        # f += 1
+        f += 1
 
         # Prints message to give user visual clue to close the window if they wish to stop the program after use.
         # The frame is drawn in a window.
