@@ -7,25 +7,33 @@
 
 # Author: Thomas Shavin Croos
 # Credits: See credit function.
-# Version: ERS Visual V3.0
+# Version: ERS Visual V4.0
 # Maintainer: Thomas Shavin Croos
-# Email: shavinminecraft@gmail.com
+# Emails: shavinminecraft@gmail.com, shavincroos@yahoo.co.uk
+
+# Any module imports commented out are optional ones and should not affect the main functionality of the program below. 
+# These modules are mainly required for experimental purposes, which was needed for my Final Year Project, but
+# feel free to uncomment them if you would like to use them for experimental purposes.
 
 import cv2
-import cvzone
-import datetime
-import os
+# import cvzone
+# import datetime
+# import os
+import sys
 from tkinter import *
 from deepface import DeepFace
 from cvzone.SelfiSegmentationModule import SelfiSegmentation
 
 # These 6 lines of code will generate the window for the main menu for the emotion detection program.
 win = Tk()
-win.geometry('500x350')
-win.title("ERS Visual V3.0")
-Label(win, text = "ERS VISUAL V3.0\n", font = 'arial 20 bold').pack()
+win.geometry('500x400')
+win.title("ERS Visual V4.0")
+Label(win, text = "ERS VISUAL V4.0\n", font = 'arial 20 bold').pack()
 Label(win, text = "Emotion Recognition System", font = 'arial 20 bold').place(x = 50, y = 45)
 Label(win, text = 'MENU', font = 'arial 15 bold').place(x = 210, y = 90)
+
+def close_application():
+    sys.exit()
 
 def emotRegSys():
 
@@ -74,6 +82,7 @@ def emotRegSys():
     # is attempted to be found and accessed by VideoCapture(1). When no webcams can be found or accessed,
     # the program will print an error telling the user that the camera cannot be found or accessed and to
     # try the program again after the webcam is plugged in or installed.
+
     if not cam.isOpened():
         cam = cv2.VideoCapture(1)
     if not cam.isOpened():
@@ -81,100 +90,125 @@ def emotRegSys():
         print("Error! Inbuilt camera not detected or cannot access inbuilt camera! Please fix the issue and try again!")
 
     # The main functionality of the program runs in this while loop.
+
     while True:
         # The frame is read from the web camera and is passed into the background subtraction function removeBG() to remove the background
         # of the frame around the user. When this is done, the analyze() function of DeepFace is called and all the 7 emotions are recorded
         # and stored in emotRes.
+
         ret, frame = cam.read()
         frame = segmentor.removeBG(frame, (218, 197, 99), threshold=0.825)
-        emotRes = DeepFace.analyze(frame, actions = ['emotion'], enforce_detection = False)
+        emotRes = DeepFace.analyze(frame, actions = ('emotion'), enforce_detection = False)
 
         # Frame is grayscaled for easier detection of a face due to only one colour channel being involved.
         # detectMultiScale() function will scale any faces detected on the frame to compare to images stored
         # in the cascade file called earlier.
+
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = faceCascade.detectMultiScale(gray, 1.1, 4)
 
         # Simply draws a rectange around a face when one is detected in frame.
+
         for(x, y, w, h) in faces:
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
         font = cv2.FONT_HERSHEY_SIMPLEX
 
         # The emotRes function is called to print out all the emotions as percentages on the frame.
-        cv2.putText(frame, 'Angry: ' + str('%.1f' % (emotRes['emotion'].get('angry'))) + '%', (10, 20), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
-        cv2.putText(frame, 'Fear: ' + str('%.1f' % (emotRes['emotion'].get('fear'))) + '%', (10, 40), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
-        cv2.putText(frame, 'Neutral: ' + str('%.1f' % (emotRes['emotion'].get('neutral'))) + '%', (10, 60), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
-        cv2.putText(frame, 'Sad: ' + str('%.1f' % (emotRes['emotion'].get('sad'))) + '%', (10, 80), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
-        cv2.putText(frame, 'Disgust: ' + str('%.1f' % (emotRes['emotion'].get('disgust'))) + '%', (10, 100), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
-        cv2.putText(frame, 'Happy: ' + str('%.1f' % (emotRes['emotion'].get('happy'))) + '%', (10, 120), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
-        cv2.putText(frame, 'Surprise: ' + str('%.1f' % (emotRes['emotion'].get('surprise'))) + '%', (10, 140), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+
+        cv2.putText(frame, f"Angry: {'%.1f' % emotRes[0]['emotion'].get('angry')}%", (10, 20), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+        cv2.putText(frame, f"Fear: {'%.1f' % emotRes[0]['emotion'].get('fear')}%", (10, 40), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+        cv2.putText(frame, f"Neutral: {'%.1f' % emotRes[0]['emotion'].get('neutral')}%", (10, 60), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+        cv2.putText(frame, f"Sad: {'%.1f' % emotRes[0]['emotion'].get('sad')}%", (10, 80), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+        cv2.putText(frame, f"Disgust: {'%.1f' % emotRes[0]['emotion'].get('disgust')}%", (10, 100), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+        cv2.putText(frame, f"Happy: {'%.1f' % emotRes[0]['emotion'].get('happy')}%", (10, 120), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+        cv2.putText(frame, f"Surprise: {'%.1f' % emotRes[0]['emotion'].get('surprise')}%", (10, 140), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+
+        #cv2.putText(frame, 'Angry: ' + str('%.1f' % (emotRes['emotion'].get('angry'))) + '%', (10, 20), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+        #cv2.putText(frame, 'Fear: ' + str('%.1f' % (emotRes['emotion'].get('fear'))) + '%', (10, 40), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+        #cv2.putText(frame, 'Neutral: ' + str('%.1f' % (emotRes['emotion'].get('neutral'))) + '%', (10, 60), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+        #cv2.putText(frame, 'Sad: ' + str('%.1f' % (emotRes['emotion'].get('sad'))) + '%', (10, 80), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+        #cv2.putText(frame, 'Disgust: ' + str('%.1f' % (emotRes['emotion'].get('disgust'))) + '%', (10, 100), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+        #cv2.putText(frame, 'Happy: ' + str('%.1f' % (emotRes['emotion'].get('happy'))) + '%', (10, 120), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+        #cv2.putText(frame, 'Surprise: ' + str('%.1f' % (emotRes['emotion'].get('surprise'))) + '%', (10, 140), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
 
         # Prints FPS counter on screen to check program is running smoothly.
+
         cv2.putText(frame, "FPS: {}".format(cam.get(cv2.CAP_PROP_FPS)), (475,30), font, 1, (255, 0, 0), 2, cv2.LINE_4)
 
         # Obtains the current date and time.
-        ct = datetime.datetime.now()
+
+        # ct = datetime.datetime.now()
 
         # Strips date to only show the time.
-        current_time = ct.strftime("%H:%M:%S")
+
+        # current_time = ct.strftime("%H:%M:%S")
 
         # The emotRes function is called again to print out all the emotions as long decimal numbers on the terminal.
-        print("Frame no.: " + str(f))
-        print("Time: ", current_time)
-        print("Angry: " + str('%.8f' % (emotRes['emotion'].get('angry'))) + " (" + str('%.1f' % (emotRes['emotion'].get('angry'))) + '%)')
-        print("Fear: " + str('%.8f' % (emotRes['emotion'].get('fear'))) + " (" + str('%.1f' % (emotRes['emotion'].get('fear'))) + '%)')
-        print("Neutral: " + str('%.8f' % (emotRes['emotion'].get('neutral'))) + " (" + str('%.1f' % (emotRes['emotion'].get('neutral'))) + '%)')
-        print("Sad: " + str('%.8f' % (emotRes['emotion'].get('sad'))) + " (" + str('%.1f' % (emotRes['emotion'].get('sad'))) + '%)')
-        print("Disgust: " + str('%.8f' % (emotRes['emotion'].get('disgust'))) + " (" + str('%.1f' % (emotRes['emotion'].get('disgust'))) + '%)')
-        print("Happy: " + str('%.8f' % (emotRes['emotion'].get('happy'))) + " (" + str('%.1f' % (emotRes['emotion'].get('happy'))) + '%)')
-        print("Surprise: " + str('%.8f' % (emotRes['emotion'].get('surprise'))) + " (" + str('%.1f' % (emotRes['emotion'].get('surprise'))) + '%)')
-        print("\n")
+        #print("Frame no.: " + str(f))
+        #print("Time: ", current_time)
+        #print("Angry: " + str('%.8f' % (emotRes['emotion'].get('angry'))) + " (" + str('%.1f' % (emotRes['emotion'].get('angry'))) + '%)')
+        #print("Fear: " + str('%.8f' % (emotRes['emotion'].get('fear'))) + " (" + str('%.1f' % (emotRes['emotion'].get('fear'))) + '%)')
+        #print("Neutral: " + str('%.8f' % (emotRes['emotion'].get('neutral'))) + " (" + str('%.1f' % (emotRes['emotion'].get('neutral'))) + '%)')
+        #print("Sad: " + str('%.8f' % (emotRes['emotion'].get('sad'))) + " (" + str('%.1f' % (emotRes['emotion'].get('sad'))) + '%)')
+        #print("Disgust: " + str('%.8f' % (emotRes['emotion'].get('disgust'))) + " (" + str('%.1f' % (emotRes['emotion'].get('disgust'))) + '%)')
+        #print("Happy: " + str('%.8f' % (emotRes['emotion'].get('happy'))) + " (" + str('%.1f' % (emotRes['emotion'].get('happy'))) + '%)')
+        #print("Surprise: " + str('%.8f' % (emotRes['emotion'].get('surprise'))) + " (" + str('%.1f' % (emotRes['emotion'].get('surprise'))) + '%)')
+        #print("\n")
 
         # The data for the experiment is printed in the text in this format underneath the headers
         # that were called previously.
         # txt.write("\n" + str(f) + "\t\t" + str(current_time) + "\t" + str('%.8f' % (emotRes['emotion'].get('angry'))) + "\t" + str('%.8f' % (emotRes['emotion'].get('fear'))) + "\t" + str('%.8f' % (emotRes['emotion'].get('neutral'))) + "\t" + str('%.8f' % (emotRes['emotion'].get('sad'))) + "\t" + str('%.8f' % (emotRes['emotion'].get('disgust'))) + "\t" + str('%.8f' % (emotRes['emotion'].get('happy'))) + "\t" + str('%.8f' % (emotRes['emotion'].get('surprise'))))        
 
         # If anger exceeds 80%, then this message will print on the screen and terminal.
-        if(emotRes['emotion'].get('angry') > 80):
-            cv2.putText(frame, 'Angry: ' + str('%.1f' % (emotRes['emotion'].get('angry'))) + '%', (10, 20), font, 0.5, (0, 0, 255), 2, cv2.LINE_4)
+
+        if(emotRes[0]['emotion'].get('angry') > 80):
+            cv2.putText(frame, f"Angry: {'%.1f' % emotRes[0]['emotion'].get('angry')}%", (10, 20), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+            #cv2.putText(frame, 'Angry: ' + str('%.1f' % (emotRes['emotion'].get('angry'))) + '%', (10, 20), font, 0.5, (0, 0, 255), 2, cv2.LINE_4)
             cv2.putText(frame, 'You are getting a bit too angry, please try to enjoy the game!', (75, 400), font, 0.5, (0, 0, 255), 2, cv2.LINE_4)
             print("WARNING! Anger levels detected above set threshold of 80%!\n")
 
         # If happy exceeds 70%, then this message will print on the screen and terminal.
-        if(emotRes['emotion'].get('happy') > 70):
-            cv2.putText(frame, 'Happy: ' + str('%.1f' % (emotRes['emotion'].get('happy'))) + '%', (10, 120), font, 0.5, (0, 255, 0), 2, cv2.LINE_4)
+
+        if(emotRes[0]['emotion'].get('happy') > 70):
+            cv2.putText(frame, f"Happy: {'%.1f' % emotRes[0]['emotion'].get('happy')}%", (10, 120), font, 0.5, (255, 0, 0), 2, cv2.LINE_4)
+            #cv2.putText(frame, 'Happy: ' + str('%.1f' % (emotRes['emotion'].get('happy'))) + '%', (10, 120), font, 0.5, (0, 255, 0), 2, cv2.LINE_4)
             cv2.putText(frame, 'Great job, keep enjoying the game!', (185, 400), font, 0.5, (0, 255, 0), 2, cv2.LINE_4)
             print("NOTICE! Happy levels deteced above set threshold of 70%! Great job, please keep it up!\n")
 
         # Frame number incremented.
-        f += 1
+        # f += 1
 
         # Prints message to give user visual clue to close the window if they wish to stop the program after use.
         # The frame is drawn in a window.
+
         cv2.putText(frame, 'Press c to close', (200,450), font, 1, (0, 255, 0), 2, cv2.LINE_4)
         output = cv2.resize(frame, (1920,1080))
-        cv2.imshow("ERS Visual V3.0 - Emotion Recognition System", output)
+        cv2.imshow("ERS Visual V4.0 - Emotion Recognition System", output)
 
         # When c is pressed, the while loop breaks.
+
         if cv2.waitKey(1) & 0xFF == ord('c'):
             break
 
     # The text file is saved and closed, the camera is released from use and
     # the window for the emotion detection program is destroyed.
     # txt.close()
+
     cam.release()
     cv2.destroyAllWindows()
 
 def credit():
+
     # Credits page with details the program's libraries and those who helped
     # contribute to the program in terms of experimentation.
+
     winCredit = Tk()
-    winCredit.geometry('500x600')
-    winCredit.title('ERS Visual V3.0 - Credits')
+    winCredit.geometry('900x550')
+    winCredit.title('ERS Visual V4.0 - Credits')
 
     Label(winCredit, text = "CREDITS", font = 'arial 20 bold').pack()
-    Label(winCredit, text = "Created and Tested by Shavin Croos", font = 'arial 15').pack()
+    Label(winCredit, text = "Created, Tested and Maintained by Shavin Croos", font = 'arial 15').pack()
     Label(winCredit, text = "With thanks to the Testers:", font = 'arial 15').pack()
     Label(winCredit, text = "Ali Al-Dibouni", font = 'arial 15').pack()
     Label(winCredit, text = "Charith Fragoso", font = 'arial 15').pack()
@@ -185,16 +219,17 @@ def credit():
     Label(winCredit, text = "Libraries Used: ", font = 'arial 15').pack()
     Label(winCredit, text = "OpenCV - To access camera.", font = 'arial 15').pack()
     Label(winCredit, text = "Deepface - To detect emotions.", font = 'arial 15').pack()
-    Label(winCredit, text = "Tkinter - Provides overall GUI, especially fo the menu.", font = 'arial 15').pack()
+    Label(winCredit, text = "Tkinter - Provides overall graphical user interface (GUI) for the program, especially for the menu.", font = 'arial 15').pack()
     Label(winCredit, text = "DateTime - Records time for data collection.", font = 'arial 15').pack()
     Label(winCredit, text = "CVZone - To replace background \n(using SelfiSegmentation function). ", font = 'arial 15').pack()
     Label(winCredit, text = "OS (This is for saving files for data collection)", font = 'arial 15').pack()
     
 def about():
     # About page tells the user how to use the program and what is shown in the program.
+
     winAbout = Tk()
     winAbout.geometry('750x500')
-    winAbout.title('ERS Visual V3.0 - About')
+    winAbout.title('ERS Visual V4.0 - About')
 
     Label(winAbout, text = "ABOUT", font = 'arial 20 bold').pack()
     Label(winAbout, text = "Click on START to start detecting the emotions\n in real-time, using your webcam of choice.", font = 'arial 15').pack()
@@ -207,9 +242,11 @@ def about():
     Label(winAbout, text = "The aim of this program is to try to help make gameplay more enjoyable. ", font = 'arial 15').pack()
 
 # Buttons created will lead to the other functions in this program.
+
 Button(win, text = 'START', font = 'arial 15', command = emotRegSys, bg = '#4dff00').place(x = 200, y = 140)
 Button(win, text = 'ABOUT', font = 'arial 15', command = about, bg = 'yellow').place(x = 198, y = 200)
 Button(win, text = 'CREDITS', font = 'arial 15', command = credit, bg = 'cyan').place(x = 188, y = 260)
+Button(win, text = 'QUIT/EXIT', font = 'arial 15', command = close_application, bg = 'red').place(x = 182, y = 320)
 win.mainloop()
 
 # END

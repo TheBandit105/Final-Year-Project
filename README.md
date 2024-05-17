@@ -1,6 +1,6 @@
 # Individual Project
 
-This is my individual project for vision-based emotion detection.
+This is my individual project for vision-based emotion detection of gameplayers over three time periods.
 
 ## Patch Notes
 
@@ -22,4 +22,6 @@ This is my individual project for vision-based emotion detection.
 
 22 April 2022 - Version 3 of the program is now available and had undergone changes to the updates from the previous version in preparation for the experimentation. It was decided to drop the screenshoting of frames since only the numerical data was needed for the project. Background subtraction has been applied to the program, which means the background the user will be replaced and filled in with a blue colour. This increased the accuracy of the program in terms of detecting the faces properly for the emotion detection process to work properly. Removed NumPy module as it wasn't used at all. Code has now been commented to explain whats happening. Credits and about pages have been updated accordingly. This is the last official version of the program before project submission today.
 However, future work may be carried out on this program, after the completion the final year project, to make improvements where necessary.
+
+28 April 2024 - Version 4 of the program is now available and carried out updates on the program due to package/module updates. More info will be provided in due course.
 
